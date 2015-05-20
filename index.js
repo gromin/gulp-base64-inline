@@ -12,8 +12,8 @@ module.exports = function (givenImagesPath) {
             return callback();
         }
 
+        // Accepting streams is prohibited
         if (file.isStream()) {
-            // accepting streams is optional
             this.emit('error', new gutil.PluginError('gulp-inline-base64', 'Stream content is not supported'));
             return callback();
         }
@@ -48,7 +48,7 @@ module.exports = function (givenImagesPath) {
             return 'url(data:' + fileMime  + ';base64,' + fileBase64 + ')';
         }
 
-        // check if file.contents is a `Buffer`
+        // Check if file.contents is a `Buffer`
         if (file.isBuffer()) {
             var base64 = String(file.contents).replace(/inline\((.+)\)/g, inline);
             file.contents = new Buffer(base64);
