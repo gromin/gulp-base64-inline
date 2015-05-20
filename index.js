@@ -6,17 +6,6 @@ var mime = require('mime');
 
 module.exports = function (givenImagesPath) {
     function base64Inline (file, enc, callback) {
-        var imagesPath;
-
-        if (!givenImagesPath) {
-            imagesPath = path.dirname(file.path);
-        } else {
-            imagesPath = path.join(path.dirname(file.path), givenImagesPath);
-            if (path.resolve(givenImagesPath) === path.normalize(givenImagesPath)) {
-                imagesPath = givenImagesPath;
-            }
-        }
-
         // Do nothing if no contents
         if (file.isNull()) {
             this.push(file);
@@ -29,10 +18,26 @@ module.exports = function (givenImagesPath) {
             return callback();
         }
 
+        function normalizePath (imagePath) {
+            var searchPath;
+
+            if (!givenImagesPath) {
+                searchPath = path.dirname(file.path);
+            } else {
+                searchPath = path.join(path.dirname(file.path), givenImagesPath);
+                if (path.resolve(givenImagesPath) === path.normalize(givenImagesPath)) {
+                    searchPath = givenImagesPath;
+                }
+            }
+
+            return path.join(searchPath, imagePath);
+        }
+
         function inline (inlineExpr, quotedPath) {
             var imagePath = quotedPath.replace(/'"/, '');
+
             try {
-                var fileData = fs.readFileSync(path.join(imagesPath, imagePath));
+                var fileData = fs.readFileSync(normalizePath(imagePath));
             }
             catch (e) {
                 return inlineExpr;
