@@ -5,6 +5,10 @@ var fs = require('fs');
 var mime = require('mime');
 
 module.exports = function (searchPaths) {
+    if (!Array.isArray(searchPaths)) {
+        searchPaths = [searchPaths];
+    }
+
     function base64Inline (file, enc, callback) {
         // Do nothing if no contents
         if (file.isNull()) {
@@ -38,12 +42,15 @@ module.exports = function (searchPaths) {
 
             var fileData, fileBase64, fileMime;
 
-            try {
-                fileData = fs.readFileSync(normalizePath(imagePath));
-                fileBase64 = new Buffer(fileData).toString('base64');
-                fileMime = mime.lookup(normalizePath(imagePath));
-            }
-            catch (e) {}
+            searchPaths.forEach(function(searchPath) {
+                if (fileData) return;
+                try {
+                    fileData = fs.readFileSync(normalizePath(imagePath));
+                    fileBase64 = new Buffer(fileData).toString('base64');
+                    fileMime = mime.lookup(normalizePath(imagePath));
+                }
+                catch (e) {}
+            });
 
             if (!fileData) return inlineExpr;
 
