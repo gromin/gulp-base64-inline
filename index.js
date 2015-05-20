@@ -36,15 +36,17 @@ module.exports = function (givenImagesPath) {
         function inline (inlineExpr, quotedPath) {
             var imagePath = quotedPath.replace(/'"/, '');
 
-            try {
-                var fileData = fs.readFileSync(normalizePath(imagePath));
-            }
-            catch (e) {
-                return inlineExpr;
-            }
+            var fileData, fileBase64, fileMime;
 
-            var fileBase64 = new Buffer(fileData).toString('base64');
-            var fileMime = mime.lookup(imagePath);
+            try {
+                fileData = fs.readFileSync(normalizePath(imagePath));
+                fileBase64 = new Buffer(fileData).toString('base64');
+                fileMime = mime.lookup(normalizePath(imagePath));
+            }
+            catch (e) {}
+
+            if (!fileData) return inlineExpr;
+
             return 'url(data:' + fileMime  + ';base64,' + fileBase64 + ')';
         }
 
