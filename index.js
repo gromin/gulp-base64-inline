@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var mime = require('mime');
 
-module.exports = function (givenImagesPath) {
+module.exports = function (searchPaths) {
     function base64Inline (file, enc, callback) {
         // Do nothing if no contents
         if (file.isNull()) {
@@ -21,12 +21,12 @@ module.exports = function (givenImagesPath) {
         function normalizePath (imagePath) {
             var searchPath;
 
-            if (!givenImagesPath) {
+            if (!searchPaths) {
                 searchPath = path.dirname(file.path);
             } else {
-                searchPath = path.join(path.dirname(file.path), givenImagesPath);
-                if (path.resolve(givenImagesPath) === path.normalize(givenImagesPath)) {
-                    searchPath = givenImagesPath;
+                searchPath = path.join(path.dirname(file.path), searchPaths);
+                if (path.resolve(searchPaths) === path.normalize(searchPaths)) {
+                    searchPath = searchPaths;
                 }
             }
 
